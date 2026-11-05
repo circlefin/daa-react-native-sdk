@@ -1,0 +1,97 @@
+// Copyright (c) 2026, Circle Internet Group, Inc. All rights reserved.
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+apply plugin: 'com.android.library'
+
+import groovy.json.JsonSlurper
+
+def getPackageJsonVersion() {
+    def packageJsonFile = file("${projectDir}/../package.json")
+    def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+    return packageJson.version
+}
+
+group = 'com.circle.daa.reactnative'
+version = getPackageJsonVersion()
+
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+if (expoModulesCorePlugin.exists()) {
+    apply from: expoModulesCorePlugin
+    applyKotlinExpoModulesCorePlugin()
+    useCoreDependencies()
+    useExpoPublishing()
+}
+
+def useManagedAndroidSdkVersions = false
+if (useManagedAndroidSdkVersions) {
+    useDefaultAndroidSdkVersions()
+} else {
+    buildscript {
+        ext.safeExtGet = { prop, fallback ->
+            rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+        }
+    }
+    project.android {
+        compileSdkVersion safeExtGet("compileSdkVersion", 36)
+        defaultConfig {
+            minSdkVersion safeExtGet("minSdkVersion", 23)
+            targetSdkVersion safeExtGet("targetSdkVersion", 36)
+        }
+    }
+}
+
+android {
+    namespace "com.circle.daa.reactnative"
+    defaultConfig {
+        versionCode 1
+        versionName getPackageJsonVersion()
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+// com.circle.daa:daa-android-sdk is a published Maven coordinate (GitHub
+// Packages). This module declares no `repositories {}` block; the host
+// application supplies the credentialed repository. See README.md for the
+// Podfile-equivalent Gradle setup (DAA_ANDROID_MAVEN_URL / _USERNAME /
+// _PASSWORD).
+
+dependencies {
+    // Pin the native SDK so dependency resolution is reproducible and updates
+    // are deliberate. 0.6.0 provides the APIs and behaviour this module relies
+    // on: it sets all of the BiometricPrompt text itself from the validated
+    // operation, so signDeviceAuthorization and
+    // signRegistrationDeviceAuthorization take the FragmentActivity directly
+    // and DaaSecureKeyModule.kt passes no prompt text; its registration signer
+    // accepts the minimal device-proof claim set this package sends; it has
+    // the native SCA ceremony (DaaScaApproveContract / DaaScaEnrollContract)
+    // with strict callback parsing, which DaaScaModule.kt bridges, and runs a
+    // custom-scheme enrollment redirect only in an Auth Tab (with no allowed
+    // Auth Tab browser the ceremony fails Unsupported(InsecureRedirect)); and
+    // it has DaaPrepareReceiptSignature, DaaSecureRandom, and
+    // DaaRegistrationFlowKey, which DaaRegistrationModule.kt calls. The SCA
+    // ceremony requires compileSdk 36 and AGP 8.9.1+ of every consumer
+    // (androidx.browser 1.9.0), hence the 36 defaults above.
+    api("com.circle.daa:daa-android-sdk:0.6.0")
+    // This module calls runBlocking. daa-android-sdk scopes coroutines as
+    // implementation, so it is not on this compile classpath transitively.
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+}
