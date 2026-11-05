@@ -1,0 +1,116 @@
+{
+  "name": "@circle-fin/daa-react-native-sdk",
+  "version": "0.4.0",
+  "description": "React Native SDK for Digital Asset Accounts (DAA) — attested authentication and self-custody DAA API access",
+  "main": "build/index.js",
+  "source": "src/index.ts",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./testing": {
+      "types": "./build/testing.d.ts",
+      "default": "./build/testing.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/circlefin/daa-react-native-sdk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/circlefin/daa-react-native-sdk.git"
+  },
+  "//private": "The release workflows set private to false when they publish, so a local npm publish cannot run by accident.",
+  "private": true,
+  "author": "",
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "build:onboarding": "tsc -p packages/onboarding/tsconfig.build.json",
+    "prepack": "yarn build",
+    "test": "jest",
+    "test:ci": "jest --ci --runInBand",
+    "check:type": "tsc --noEmit && { [ ! -d packages/onboarding ] || tsc --noEmit -p packages/onboarding; }",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:license": "bash scripts/check-license-headers.sh",
+    "test:ios-native": "bash scripts/test-ios-native.sh"
+  },
+  "files": [
+    "build",
+    "src",
+    "ios",
+    "android",
+    "expo-module.config.json",
+    "DaaReactNativeSdk.podspec",
+    "testing.js",
+    "testing.d.ts",
+    "README.md",
+    "!**/__test__",
+    "!**/*.test.ts",
+    "!android/build/",
+    "!android/.gradle/",
+    "!ios/Pods/",
+    "!ios/build/",
+    "!ios/Tests/"
+  ],
+  "keywords": [
+    "react-native",
+    "circle",
+    "daa",
+    "digital-asset-accounts",
+    "usdc",
+    "self-custody",
+    "attested"
+  ],
+  "peerDependencies": {
+    "expo": ">=54.0.0",
+    "expo-modules-core": ">=3.0.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.81.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    },
+    "expo-modules-core": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@cyclonedx/cyclonedx-npm": "6.0.1",
+    "@sumsub/react-native-mobilesdk-module": "1.46.1",
+    "@react-native/babel-preset": "0.85.3",
+    "@react-native/jest-preset": "0.85.3",
+    "@testing-library/react-native": "14.0.1",
+    "@types/jest": "29.5.14",
+    "@types/react": "19.2.3",
+    "babel-jest": "29.7.0",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "expo-modules-core": "~3.0.29",
+    "jest": "^29.7.0",
+    "prettier": "^3.6.2",
+    "react": "19.2.3",
+    "react-native": "0.85.3",
+    "react-native-persona": "2.48.0",
+    "test-renderer": "^1.0.0",
+    "ts-jest": "^29.4.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.38.0"
+  },
+  "resolutions": {
+    "**/@eslint/eslintrc/js-yaml": "^4.3.2",
+    "**/@istanbuljs/load-nyc-config/js-yaml": "^3.15.2",
+    "typescript-eslint/**/brace-expansion": "5.0.12",
+    "@cyclonedx/cyclonedx-npm/**/brace-expansion": "2.1.7",
+    "**/minimatch/brace-expansion": "1.1.21"
+  }
+}
