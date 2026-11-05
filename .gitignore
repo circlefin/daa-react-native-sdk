@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+build/
+*.tsbuildinfo
+
+# Packed SDK tarball (produced by `npm pack` in CI)
+*.tgz
+
+# Test / coverage
+coverage/
+
+# Native build artifacts
+ios/Pods/
+ios/build/
+android/build/
+android/.gradle/
+*.xcworkspace/xcuserdata/
+
+# Logs & OS
+*.log
+.DS_Store
+
+# Editor
+.idea/
+*.swp
+
+# Agent tooling
+.claude/
