@@ -1,0 +1,6 @@
+# Byte-pinned cross-platform conformance artifact. Its SHA-256 is asserted by
+# the fixture loader, so EOL normalization on checkout (Git for Windows installs
+# with core.autocrlf=true by default) would rewrite every line ending and fail
+# the digest guard — with advice to re-copy the file, which cannot help because
+# re-copying reproduces the same normalized bytes.
+src/__test__/fixtures/AuthKeyWireV1.json -text
